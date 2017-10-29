@@ -1,0 +1,159 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map_canvas {
+    height: 50%;
+    width: 80%;
+    margin-left: 10%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#lognbtn {
+  margin-left: 40%;
+}
+
+.btn {
+    background-color: #58373C;
+}
+.bottom-bar{
+	  background-color: #58373C;
+}
+
+#search_map{
+    height: 85%;
+}
+
+#imageView {
+    width: 50%;
+    align-content: center;
+}
+
+.photo {
+    text-align:center;
+	width: 100%;
+    padding-top: 25%;
+}
+
+
+
+.skills {
+	height:70px;
+ 	width:70px;
+ 	margin: 20px 20px 20px 20px;
+
+}
+.skillsSelected{
+	height:70px;
+ 	width:70px;
+ 	margin: 20px 20px 20px 20px;
+ 	box-shadow:0px 12px 22px 1px #333;
+ 	opacity: .5;
+}
+.center{
+	text-align:center;
+	width: 100%;
+}
+#push-button{
+	width: 150px;
+	text-align: left;
+}
+
+.bottombar {
+    background-color: #58373C;
+    display: block;
+}
+
+.topBar {
+    background-color: #58373C;
+}
+
+.topBarContents{
+    padding-left: 5.5em;
+    padding-top: .25em;
+    padding-bottom: .25em;
+    font-size: 2rem;
+    color: white;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.dropdown-content {
+    min-width: 160px;
+    height: 50px;
+    padding-left: 1em;
+    overflow: auto;
+    z-index: 1;
+}
+
+
+#hours {
+    width: 20px;
+    height: 20px;
+}
+
+#workDate {
+    width: 115px;
+    height: 30px;
+}
+
+#searchText {
+  font-size: 1.5em;
+}
+
+.currentPage {
+    background: #77bfef;
+}
+
+.btmicons {
+    padding-left: .5em;
+}
+
+.radio {
+    padding-left: .5em;
+}
+
+.searching {
+    background-color: #58373C;
+}
+
+#searchText {
+  color: white;
+}
+
+.page__background{
+	background:url(../images/background2.jpg) center top;
+	background-size: cover;
+}
+#homeContent{
+	background:url(../images/background.jpg) center top;
+	background-size: cover;
+	padding-top: 50%;
+}
+.formDivision input[type=text],.formDivision input[type=password],.formDivision textarea{
+	height: 30px;
+	vertical-align: middle;
+  	border-radius:10px;
+  	border-style: solid;
+  	border-color: #58373C;
+  	width: 80%;
+  	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 10%
+}
+.formDivision input[type=button]{
+	width: 80%;
+	height: 30px;
+  	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 10%
+}
+.formDivision{
+	width: 100%;
+}
+
+.tab-bar {
+  background-color: #58373C;
+}
