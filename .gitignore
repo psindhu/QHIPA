@@ -1,5 +1,16 @@
 # Cordova Extensions
-res/
+plugins/
+platforms/
+node_modules/
+hooks/
+merges/
+simulation/
+
+package.json
+package-lock.json
+bower.json
+build.json
+
 
 # Xcode
 #
