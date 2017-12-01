@@ -4,10 +4,14 @@ document.addEventListener('init', function (event) {
 
     if (page.id === 'login') {
         page.querySelector('#push-button').onclick = function () {
-            getLocation();
-            document.querySelector('#Navigator').pushPage('register.html', { data: { title: 'Register' } });
+            console.log('pushing page');
+            window.location = 'register.html';
+           // document.querySelector('#Navigator').pushPage('register.html', { data: { title: 'Register' } });
 
         };
+    } else if (page.id === 'register') {
+            getLocation();
+           // document.querySelector('#Navigator').pushPage('register.html', { data: { title: 'Register' } });
     } else if (page.id === 'profilepic') {
         page.querySelector("#cameraPhoto").onclick = function (e) {
             e.preventDefault();
