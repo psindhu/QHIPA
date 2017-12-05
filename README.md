@@ -28,8 +28,21 @@ $ cordova emulate iOS
 ```
 
 
+## Project Setup Instructions for existing Cordova Installations
+
+```
+$ git clone https://github.com/psindhu/QHIPA.git
+$ cd QHIPA/
+$ cordova platform add android --save
+$ cordova platform add ios --save
+$ cordova build android
+$ cordova run android
+```
+
+
 ## Contribution
 
 - Pinky Sindhu
 - Percy Soliz
 - Chris Huang
+
