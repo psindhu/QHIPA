@@ -322,25 +322,29 @@ document.addEventListener('show', function(event) {
     	showDialogWithMessage('dialog-invalid-message', message);
     }
     
-    function createProfile() {
-
-        var modal = document.querySelector('ons-modal');
-        modal.show();
-
-        var base64 = getBase64Image(document.getElementById("userImageView"));
+    function loadProfile() {
         var profile = {
             "name": document.getElementById('name').value,
             "description": document.getElementById('description').value,
-            "profilePicture": base64,
+            "profilePicture": getBase64Image(document.getElementById("userImageView")),
             "email": document.getElementById('email').value,
             "password": document.getElementById('password').value,
             "mobilePhoneNumber": document.getElementById('mobilePhoneNumber').value,
             "latitude": document.getElementById('latitude').value,
             "longitude": document.getElementById('longitude').value,
-            "skills": document.getElementById('selected_skills').value
+            "skills": document.getElementById('skills').value
         }
         console.log(profile);
+        return profile;
+    }
+    function createProfile(){
+        saveProfileIntoIndexDB();
+    }
 
+    function saveProfileRemote() {
+        var modal = document.querySelector('ons-modal');
+        modal.show();
+        var profile = createProfile();
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
@@ -377,6 +381,28 @@ document.addEventListener('show', function(event) {
         };
         xhr.send(JSON.stringify(profile));
     }
+    function saveProfileIntoIndexDB(){
+        var openReq = window.indexedDB.open("Profiles");
+        openReq.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            db.createObjectStore("profile", {autoIncrement: true});
+        };
+        openReq.onsuccess = function (event) {
+            var db = event.target.result,
+            profile = loadProfile();
+            var addReq = db.transaction("profile", "readwrite").objectStore("profile").add(profile);
+            addReq.onsuccess = function (event) {
+                console.log("Operation completed successfully");
+            };
+            addReq.onerror = function (event) {
+                console.log("Operation failed");
+            };
+        }
+        openReq.onerror = function (event) {
+            console.log("Operation failed");
+        }
+    }
+
     
  // Get Skills from Location
     function getSearcherLocation() {

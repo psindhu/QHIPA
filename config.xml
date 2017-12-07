@@ -34,4 +34,5 @@
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="QHIPA uses location to find prospects" />
     </plugin>
     <plugin name="cordova-plugin-geolocation" spec="^3.0.0" />
+    <plugin name="cordova-plugin-network-information" spec="^1.3.4" />
 </widget>
