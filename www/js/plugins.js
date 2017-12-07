@@ -393,6 +393,12 @@ document.addEventListener('show', function(event) {
             var addReq = db.transaction("profile", "readwrite").objectStore("profile").add(profile);
             addReq.onsuccess = function (event) {
                 console.log("Operation completed successfully");
+                document.querySelector('#Navigator').pushPage('profilecreated.html', {
+                    data: {
+                        title: 'Profile Created'
+                    }
+                });
+
             };
             addReq.onerror = function (event) {
                 console.log("Operation failed");
@@ -869,13 +875,26 @@ document.addEventListener('show', function(event) {
         }
     }
 
+    function displayCreatedProfile(data){
+        document.getElementById('previewName').innerHTML = data['name'];
+        document.getElementById('previewImage').src = data['profilePicture'];
+        document.getElementById('previewDescription').innerHTML = data['description'];
+        document.getElementById('previewPriceHour').innerHTML = '$' + data['priceHour'] + ' per Hour';
+        var profileSkills = data['skills'];
+        profileSkills = profileSkills.slice(1, -1);
+        var arrayOfStrings = profileSkills.split('][');
+        var auxSkills = '';
+        for (var i = 0; i < arrayOfStrings.length; i++) {
+            console.log(arrayOfStrings[i]);
+            auxSkills += '<img src="' + skillObj[arrayOfStrings[i]] + '" width="50" height="50" style="padding:5px;">';
+        }
+        document.getElementById('previewSkills').innerHTML = auxSkills;
+    }
+
     function loadProfileCreated() {
-    	
         var modal = document.querySelector('ons-modal');
         modal.show();
-        
         document.getElementById('profile-tab-maincard').style.display = "none";
-        
         var profileId = localStorage.getItem('profileId');
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + profileId);

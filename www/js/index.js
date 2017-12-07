@@ -89,34 +89,36 @@ function flushDataToServer(){
         var cursorRequest = profile.openCursor(keyRange);
         cursorRequest.onsuccess = function(e) {
             var result = e.target.result;
-            if(!!result == false)
-                return;
-            console.log(result.value);
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
-            xhr.setRequestHeader("Accept", "application/json");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.onload = function() {
-                try {
-                    if (this.status === 200) {
-                        //console.log(data);
-                    } else {
+            if(result) {
+                console.log(result.value);
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onload = function() {
+                    try {
+                        if (this.status === 200) {
+                            //console.log(data);
+                        } else {
+                            showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
+                        }
+                    } catch (e) {
                         showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
                     }
-                } catch (e) {
-                    showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
-                }
-            };
+                };
 
-            xhr.onerror = function() {
-                showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
-            };
-            xhr.send(JSON.stringify(result.value));
-            profile.delete(result.key);
-            result.continue();
+                xhr.onerror = function() {
+                    showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
+                };
+                xhr.send(JSON.stringify(result.value));
+                profile.delete(result.key);
+                result.continue();
+            } else {
+               console.log('No data Found')
+            }
+
         };
         modal.hide();
         console.log(addReq);
     }
-
 }
