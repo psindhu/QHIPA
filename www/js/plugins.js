@@ -1016,19 +1016,19 @@ var hideDialog = function(id) {
         .hide();
 };
 
-function addToSkills(skillId) {
+function addToSkills(skillId){
     var skills = document.getElementById('skills').value;
-    if (typeof skills === 'undefined') {
+    if(typeof skills === 'undefined'){
         skills = '';
     }
-    if (document.getElementById("skill_" + skillId).className == "skillsSelected") {
-        document.getElementById("skill_" + skillId).className = "skills";
-        skills = skills.replace('[' + skillId + ']', '');
-    } else {
-        document.getElementById("skill_" + skillId).className = "skillsSelected"
-        skills = skills + '[' + skillId + ']';
+    if(document.getElementById("skill_"+skillId).className == "skillsSelected"){
+        document.getElementById("skill_"+skillId).className = "skills";
+        skills = skills.replace('[' + skillId + ']','');
+    }else{
+        document.getElementById("skill_"+skillId).className = "skillsSelected"
+        skills = skills + '[' + skillId+']';
     }
-    document.getElementById('selected_skills').value = skills;
+    document.getElementById('skills').value = skills;
     console.log(skills);
 }
 
