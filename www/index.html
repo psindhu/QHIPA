@@ -120,7 +120,7 @@
             </div>
         </ons-toolbar>
         <div class="register_bg">
-            <div style="text-align: center; padding-top: 5%;">
+            <div style="text-align: center; padding-top: 5%; height: 100%">
 
                 <form action="#">
                     <p>
@@ -159,7 +159,7 @@
                 </form>
                 <div class="formDivision" style="margin-top:20px;">
                     <!-- MAP CANVAS-->
-                    <div id="userlocation_map_canvas" style="height:100%;">
+                    <div id="userlocation_map_canvas">
                         <ons-progress-circular indeterminate></ons-progress-circular>
                     </div>
                     <input id="latitude" type="hidden"/>
@@ -256,9 +256,12 @@
 
 
 <ons-template id="profilecreated.html">
-    <ons-page id="profilecreated.html">
+    <ons-page id="profilecreated">
         <ons-toolbar>
             <div class="center">Profile Created!</div>
+            <div class="right">
+                <ons-toolbar-button id="logout-button">Done</ons-toolbar-button>
+            </div>
         </ons-toolbar>
         <div id="profile-tab-maincard_created">
                 <ons-card>
@@ -271,11 +274,9 @@
                             <img id="previewImage_created" src="img/default.png" width="150" height="150"/>
                         </div>
                         <div id="previewDescription_created"
-                             style="margin-top: 20px; margin-bottom: 20px; font-size: 15px;">Hero
-                            of Gotham
+                             style="margin-top: 20px; margin-bottom: 20px; font-size: 15px;">
                         </div>
-                        <div id="previewSkills_created">Hero of Gotham</div>
-                        <div id="previewPriceHour_created" style="margin-top: 20px; margin-bottom: 20px; font-size: 15px;">$10 per hour</div>
+                        <div id="previewSkills_created"></div>
                     </div>
                 </ons-card>
             </div>

@@ -13,32 +13,32 @@ var skillObj = {
 
 var chats = [];
 
-document.addEventListener('init', function(event) {
+document.addEventListener('init', function (event) {
 
     var page = event.target;
-    
+
     if (page.id === 'profileHire') {
 
-    	var modal = document.querySelector('ons-modal');
+        var modal = document.querySelector('ons-modal');
         modal.show();
         document.getElementById('profile-main-card').style.display = "none";
     }
-    
+
     if (page.id === 'profileSend') {
-        
-    	var modal = document.querySelector('ons-modal');
+
+        var modal = document.querySelector('ons-modal');
         modal.show();
         document.getElementById('profile-reviewrequest-card').style.display = "none";
     }
 
-    if(page.id === 'profilePage') {
-    	
-    	document.getElementById('profile-tab-maincard').style.display = "none";
+    if (page.id === 'profilePage') {
+
+        document.getElementById('profile-tab-maincard').style.display = "none";
     }
 
 });
 
-document.addEventListener('show', function(event) {
+document.addEventListener('show', function (event) {
 
     var page = event.target;
     var prospectIdList = [];
@@ -46,7 +46,7 @@ document.addEventListener('show', function(event) {
 
     if (page.id === 'tabbar-page') {
 
-    	if (sessionStorage.getItem('tabLoaderId') == 1) {
+        if (sessionStorage.getItem('tabLoaderId') == 1) {
 
             document.getElementById('appTabbar').setActiveTab(2);
             sessionStorage.setItem('tabLoaderId', 0);
@@ -54,32 +54,36 @@ document.addEventListener('show', function(event) {
     }
 
     if (page.id === 'login') {
-    	
-        page.querySelector('#register-button').onclick = function() {
+
+        page.querySelector('#register-button').onclick = function () {
             document.querySelector('#Navigator').pushPage('register.html', {
                 data: {
                     title: 'Create Account'
                 }
             });
         };
-        
-        page.querySelector('#login-button').onclick = function() {
-        	
-        	if (document.getElementById('username').value === '' || document.getElementById('passwordLogin').value === '' ) {
-                showDialogWithMessage('dialog-invalid-message', 'Please enter valid login details');
+
+        page.querySelector('#login-button').onclick = function () {
+            console.log(navigator.connection.type);
+            if (navigator.connection.type != Connection.NONE) {
+                flushDataToServer();
+                if (document.getElementById('username').value === '' || document.getElementById('passwordLogin').value === '') {
+                    showDialogWithMessage('dialog-invalid-message', 'Please enter valid login details');
+                } else {
+                    verifyLogin();
+                }
             } else {
-            	verifyLogin();
+                showDialogWithMessage('dialog-invalid-message', 'Please check your Internet Connection');
             }
-        	
-            
+
         };
     }
 
     if (page.id === 'register') {
-    	
+
         getUserLocation();
-        
-        page.querySelector('#register-skills-button').onclick = function() {
+
+        page.querySelector('#register-skills-button').onclick = function () {
 
             if (document.getElementById('name').value === '' || document.getElementById('description').value === '' || document.getElementById('email').value === '' || document.getElementById('password').value === '' || document.getElementById('mobilePhoneNumber').value === '') {
                 showDialogWithMessage('dialog-invalid-message', 'Please fill all details');
@@ -94,8 +98,8 @@ document.addEventListener('show', function(event) {
     }
 
     if (page.id === 'skills') {
-    	
-        page.querySelector('#register-photo-button').onclick = function() {
+
+        page.querySelector('#register-photo-button').onclick = function () {
             document.querySelector('#Navigator').pushPage('profilepic.html', {
                 data: {
                     title: 'Photo'
@@ -105,44 +109,54 @@ document.addEventListener('show', function(event) {
     }
 
     if (page.id === 'profilepic') {
-    	
-        page.querySelector("#cameraPhoto").onclick = function(e) {
+
+        page.querySelector("#cameraPhoto").onclick = function (e) {
             e.preventDefault();
             getPhoto(true);
         };
-        
-        page.querySelector("#galleryPhoto").onclick = function(e) {
+
+        page.querySelector("#galleryPhoto").onclick = function (e) {
             e.preventDefault();
             getPhoto(false);
         };
-        
-        page.querySelector('#register-account-button').onclick = function() {
+
+        page.querySelector('#register-account-button').onclick = function () {
             createProfile();
         };
     }
 
     if (page.id === 'searchskills') {
-    	
+
         getSearcherLocation();
-        
-        page.querySelector('#search-button').onclick = function() {
+
+        page.querySelector('#search-button').onclick = function () {
             var dialog = document.getElementById('search-filter-dialog');
             if (dialog) {
                 dialog.show();
             } else {
                 ons.createDialog('searchdialog.html')
-                    .then(function(dialog) {
+                    .then(function (dialog) {
                         dialog.show();
                     });
             }
         };
     }
 
+    if (page.id === 'profilecreated') {
+
+        displayCreatedProfile();
+
+        page.querySelector('#logout-button').onclick = function () {
+
+            logoutUser();
+        };
+    }
+
     if (page.id === 'profileHire') {
 
-    	loadProspectProfile();
-    	
-        page.querySelector('#profile-prospect-hire').onclick = function() {
+        loadProspectProfile();
+
+        page.querySelector('#profile-prospect-hire').onclick = function () {
             document.querySelector('#Navigator').pushPage('profileSend.html', {
                 data: {
                     title: 'Review your Request'
@@ -153,40 +167,39 @@ document.addEventListener('show', function(event) {
 
     if (page.id === 'profileSend') {
 
-    	loadConfirmHire();  
-    	
-    	page.querySelector('#profile-prospect-hire-confirm').onclick = function() {
+        loadConfirmHire();
+
+        page.querySelector('#profile-prospect-hire-confirm').onclick = function () {
             confirmProfile();
-        };   
+        };
     }
 
     if (page.id === 'requestHired') {
 
-    	loadMyRequests();
+        loadMyRequests();
     }
-    
+
     if (page.id === 'profilePage') {
-    	
-    	loadProfileCreated();
-    	
-    	page.querySelector('#logout-button').onclick = function() {
-            
-    		logoutUser();
+
+        loadProfileCreated();
+
+        page.querySelector('#logout-button').onclick = function () {
+
+            logoutUser();
         };
     }
-    
-    if(page.id === 'chatProspect') {
-    	
-    	loadChats(page.data);
-    	
-    	page.querySelector('#chat-message-send-button').onclick = function() {
-            
-    		sendMessage();
+
+    if (page.id === 'chatProspect') {
+
+        loadChats(page.data);
+
+        page.querySelector('#chat-message-send-button').onclick = function () {
+
+            sendMessage();
         };
     }
-    
-    
-    
+
+
     function verifyLogin() {
 
         var username = document.getElementById('username').value;
@@ -198,7 +211,7 @@ document.addEventListener('show', function(event) {
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profileLogin?mobilePhoneNumber=" + username + "&password=" + password);
         xhr.setRequestHeader("Accept", "application/json");
 
-        xhr.onload = function() {
+        xhr.onload = function () {
 
             var modal = document.querySelector('ons-modal');
             modal.hide();
@@ -228,7 +241,7 @@ document.addEventListener('show', function(event) {
             }
         };
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             var modal = document.querySelector('ons-modal');
             modal.hide();
 
@@ -242,8 +255,8 @@ document.addEventListener('show', function(event) {
 
         xhr.send();
     }
-    
- // Get User Location
+
+    // Get User Location
     function getUserLocation() {
 
         navigator.geolocation.getCurrentPosition(onSuccessUserLocation,
@@ -318,10 +331,10 @@ document.addEventListener('show', function(event) {
     }
 
     function onFailImage(message) {
-    	
-    	showDialogWithMessage('dialog-invalid-message', message);
+
+        showDialogWithMessage('dialog-invalid-message', message);
     }
-    
+
     function loadProfile() {
         var profile = {
             "name": document.getElementById('name').value,
@@ -337,7 +350,8 @@ document.addEventListener('show', function(event) {
         console.log(profile);
         return profile;
     }
-    function createProfile(){
+
+    function createProfile() {
         saveProfileIntoIndexDB();
     }
 
@@ -349,7 +363,7 @@ document.addEventListener('show', function(event) {
         xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = function() {
+        xhr.onload = function () {
 
             modal.hide();
 
@@ -374,14 +388,15 @@ document.addEventListener('show', function(event) {
             }
         };
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             modal.hide();
 
             showDialogWithMessage('dialog-invalid-message', 'Error creating user profile!');
         };
         xhr.send(JSON.stringify(profile));
     }
-    function saveProfileIntoIndexDB(){
+
+    function saveProfileIntoIndexDB() {
         var openReq = window.indexedDB.open("Profiles");
         openReq.onupgradeneeded = function (event) {
             var db = event.target.result;
@@ -389,7 +404,7 @@ document.addEventListener('show', function(event) {
         };
         openReq.onsuccess = function (event) {
             var db = event.target.result,
-            profile = loadProfile();
+                profile = loadProfile();
             var addReq = db.transaction("profile", "readwrite").objectStore("profile").add(profile);
             addReq.onsuccess = function (event) {
                 console.log("Operation completed successfully");
@@ -409,13 +424,13 @@ document.addEventListener('show', function(event) {
         }
     }
 
-    
- // Get Skills from Location
+
+    // Get Skills from Location
     function getSearcherLocation() {
-    	
-    	var modal = document.querySelector('ons-modal');
-    	modal.show();
-    	
+
+        var modal = document.querySelector('ons-modal');
+        modal.show();
+
         navigator.geolocation.getCurrentPosition(onSuccessSearchSkills,
             onFailSearchSkills, {
                 timeout: 15000,
@@ -433,17 +448,17 @@ document.addEventListener('show', function(event) {
     }
 
     function onFailSearchSkills(error) {
-    	
-    	var modal = document.querySelector('ons-modal');
-    	modal.hide();
-    	
-    	showDialogWithMessage('dialog-invalid-message', error.message);
+
+        var modal = document.querySelector('ons-modal');
+        modal.hide();
+
+        showDialogWithMessage('dialog-invalid-message', error.message);
     }
 
     function buildMapSearch(lat, long) {
-    	
-    	var modal = document.querySelector('ons-modal');
-    	
+
+        var modal = document.querySelector('ons-modal');
+
         // set combined position for user
         console.log("Inside of buildMapSearch");
         var latlong = new google.maps.LatLng(lat, long);
@@ -454,27 +469,27 @@ document.addEventListener('show', function(event) {
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("search_map"), mapOptions);
-        
+
         var bounds = new google.maps.LatLngBounds();
-        
+
         var prospects = [];
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
-        xhr.onload = function() {
-        	
-        	modal.hide();
-        	
+        xhr.onload = function () {
+
+            modal.hide();
+
             try {
                 if (this.status === 200) {
                     var data = JSON.parse(this.response);
 
                     for (var i = 0; i < data.length; i++) {
-                    	
-                    	var infowindow = new google.maps.InfoWindow;
-                    	
+
+                        var infowindow = new google.maps.InfoWindow;
+
                         var record = data[i];
-                        
+
                         var prospect = record['name'] ? record['name'] : 'Name' + ' ($' + record['priceHour'] + '/hr)';
                         var userId = record['profileId'];
                         var profilePic = record['profilePicture'];
@@ -483,36 +498,36 @@ document.addEventListener('show', function(event) {
                             size: new google.maps.Size(40, 40),
                             scaledSize: new google.maps.Size(40, 40)
                         };
-                        
+
                         var d_latlng = {
-                                lat: parseFloat(record['latitude']),
-                                lng: parseFloat(record['longitude'])
-                            };
+                            lat: parseFloat(record['latitude']),
+                            lng: parseFloat(record['longitude'])
+                        };
 
                         var marker = new google.maps.Marker({
                             position: d_latlng,
                             icon: image,
                             map: map
                         });
-                        
+
                         infowindow.setContent(prospect);
                         infowindow.open(map, marker);
-                        
+
                         (function (marker, record) {
                             google.maps.event.addListener(marker, "click", function (e) {
-                            	
-                            	sessionStorage.setItem('prospectIdProfileHire', record['profileId']);
+
+                                sessionStorage.setItem('prospectIdProfileHire', record['profileId']);
                                 document.querySelector('#Navigator').pushPage('profileHire.html', {
                                     data: {
                                         title: 'Hiring a Profile'
                                     }
                                 });
-                            	
+
                             });
                         })(marker, record);
 
                     }
-                    
+
                 } else {
                     console.log(this.status + " " + this.statusText);
                 }
@@ -521,27 +536,27 @@ document.addEventListener('show', function(event) {
             }
         };
 
-        xhr.onerror = function() {
-        	
-        	modal.hide();
+        xhr.onerror = function () {
+
+            modal.hide();
             console.log(this.status + " " + this.statusText);
         };
 
         xhr.send();
     }
-    
+
     function loadProspectProfile() {
-    	
-    	document.getElementById('profile-main-card').style.display = "none";
+
+        document.getElementById('profile-main-card').style.display = "none";
         var modal = document.querySelector('ons-modal');
 
         var prospectId = sessionStorage.getItem('prospectIdProfileHire');
-        
+
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + prospectId);
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = function() {
+        xhr.onload = function () {
             modal.hide();
             try {
                 if (this.status === 200) {
@@ -584,17 +599,17 @@ document.addEventListener('show', function(event) {
                 showDialogWithMessage('dialog-invalid-message', 'Unable to retrieve Prospect information.');
             }
         };
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             modal.hide();
             showDialogWithMessage('dialog-invalid-message', 'Unable to retrieve Prospect information.');
         };
         xhr.send();
-    	
+
     }
-    
+
     function loadConfirmHire() {
-    	
-    	var modal = document.querySelector('ons-modal');
+
+        var modal = document.querySelector('ons-modal');
         var date = new Date();
 
         var currentHours = date.getHours();
@@ -667,7 +682,7 @@ document.addEventListener('show', function(event) {
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             try {
                 if (this.status === 200) {
                     var data = JSON.parse(this.response);
@@ -686,19 +701,19 @@ document.addEventListener('show', function(event) {
             }
         };
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             console.log(this.status + " " + this.statusText);
         };
         xhr.send(JSON.stringify(request));
     }
 
     function loadMyRequests() {
-    	
-    	var modal = document.querySelector('ons-modal');
+
+        var modal = document.querySelector('ons-modal');
         modal.show();
 
         document.getElementById('myrequest-container').style.display = "none";
-        
+
         var element = document.getElementById("myrequestContent");
 //        element.innerHTML = '';
 
@@ -708,8 +723,8 @@ document.addEventListener('show', function(event) {
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/requestservice/request?profileId=" + profileId);
         xhr.setRequestHeader("Accept", "application/json");
 
-        xhr.onload = function() {
-            
+        xhr.onload = function () {
+
             try {
                 if (this.status === 200) {
 
@@ -718,8 +733,8 @@ document.addEventListener('show', function(event) {
 
                     if (data.length == 0) {
 
-                    	modal.hide();
-                    	document.getElementById('myrequest-container').style.display = "block";
+                        modal.hide();
+                        document.getElementById('myrequest-container').style.display = "block";
                         showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
                         return;
                     }
@@ -727,7 +742,7 @@ document.addEventListener('show', function(event) {
                     element.innerHTML = '';
 
                     var j = 0;
-                    for (var i = data.length-1; i >=0 ; i--) {
+                    for (var i = data.length - 1; i >= 0; i--) {
 
                         var currentItem = data[i];
                         var statusColor = "green";
@@ -739,14 +754,14 @@ document.addEventListener('show', function(event) {
                         prospectIdList.push(currentItem['prospectId'] + '_' + i);
 
                         var bgColor = '#DFDFDF;';
-                        if(j % 2 == 0) {
-                        	bgColor = '#FFFFFF;';
+                        if (j % 2 == 0) {
+                            bgColor = '#FFFFFF;';
                         }
                         j++;
-                        
+
                         element.appendChild(ons.createElement(
-                            '<ons-list-item style="background-color:' + bgColor+ '">' +
-                            
+                            '<ons-list-item style="background-color:' + bgColor + '">' +
+
                             '<div class="center" style="width:70% !important;">' +
                             '<div>' +
                             '<span style="float:left;margin-bottom: 20px;font-size:18px;font-weight:bold;" id="prospectIdName_' + currentItem['prospectId'] + '_' + i + '">No Name</span>' +
@@ -795,59 +810,51 @@ document.addEventListener('show', function(event) {
 
                     }
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         loadProspectDetails();
                     }, 1000);
 
                 } else {
 
-                	modal.hide();
-                	document.getElementById('myrequest-container').style.display = "block";
+                    modal.hide();
+                    document.getElementById('myrequest-container').style.display = "block";
                     showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
                 }
             } catch (e) {
-            	
-            	modal.hide();
-            	document.getElementById('myrequest-container').style.display = "block";
+
+                modal.hide();
+                document.getElementById('myrequest-container').style.display = "block";
                 showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
             }
         };
-        xhr.onerror = function() {
+        xhr.onerror = function () {
 
-        	modal.hide();
-        	document.getElementById('myrequest-container').style.display = "block";
+            modal.hide();
+            document.getElementById('myrequest-container').style.display = "block";
             showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
         };
         xhr.send();
     }
-    
+
     function loadProspectDetails() {
 
         if (prospectIdList.length > 0) {
-
-           
-        	var itemMain = prospectIdList.pop();
-
+            var itemMain = prospectIdList.pop();
             var itemArray = itemMain.split('_');
-
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + itemArray[0]);
             xhr.setRequestHeader("Accept", "application/json");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.onload = function() {
+            xhr.onload = function () {
 
                 try {
                     if (this.status === 200) {
-
                         var data = JSON.parse(this.response);
-
                         var nameElement = document.getElementById('prospectIdName_' + itemArray[0] + '_' + itemArray[1]);
                         nameElement.innerHTML = data['name'] != '' ? data['name'] : 'No Name';
-
                         var imageElement = document.getElementById('prospectIdImage_' + itemArray[0] + '_' + itemArray[1]);
                         imageElement.setAttribute('style', 'width:80px;height:80px;');
                         imageElement.src = data['profilePicture'];
-
                         console.log(JSON.stringify(data));
 
                         loadProspectDetails();
@@ -862,25 +869,24 @@ document.addEventListener('show', function(event) {
                     console.log(e.message);
                 }
             };
-            xhr.onerror = function() {
+            xhr.onerror = function () {
                 loadProspectDetails();
                 console.log(this.status + " " + this.statusText);
             };
             xhr.send();
-        }else {
-        	
-        	var modal = document.querySelector('ons-modal');
-        	modal.hide();
-        	document.getElementById('myrequest-container').style.display = "block";
+        } else {
+
+            var modal = document.querySelector('ons-modal');
+            modal.hide();
+            document.getElementById('myrequest-container').style.display = "block";
         }
     }
 
-    function displayCreatedProfile(data){
-        document.getElementById('previewName').innerHTML = data['name'];
-        document.getElementById('previewImage').src = data['profilePicture'];
-        document.getElementById('previewDescription').innerHTML = data['description'];
-        document.getElementById('previewPriceHour').innerHTML = '$' + data['priceHour'] + ' per Hour';
-        var profileSkills = data['skills'];
+    function displayCreatedProfile() {
+        var profile = loadProfile();
+        document.getElementById('previewName_created').innerHTML = profile['name'];
+        document.getElementById('previewImage_created').src = document.getElementById('userImageView').src;
+        var profileSkills = profile['skills'];
         profileSkills = profileSkills.slice(1, -1);
         var arrayOfStrings = profileSkills.split('][');
         var auxSkills = '';
@@ -888,7 +894,8 @@ document.addEventListener('show', function(event) {
             console.log(arrayOfStrings[i]);
             auxSkills += '<img src="' + skillObj[arrayOfStrings[i]] + '" width="50" height="50" style="padding:5px;">';
         }
-        document.getElementById('previewSkills').innerHTML = auxSkills;
+        document.getElementById('previewSkills_created').innerHTML = auxSkills;
+        document.getElementById('previewDescription_created').innerHTML = profile['description'];
     }
 
     function loadProfileCreated() {
@@ -899,7 +906,7 @@ document.addEventListener('show', function(event) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + profileId);
         xhr.setRequestHeader("Accept", "application/json");
-        xhr.onload = function() {
+        xhr.onload = function () {
             try {
                 if (this.status === 200) {
                     var data = JSON.parse(this.response);
@@ -917,25 +924,25 @@ document.addEventListener('show', function(event) {
                         auxSkills += '<img src="' + skillObj[arrayOfStrings[i]] + '" width="50" height="50" style="padding:5px;">';
                     }
                     document.getElementById('previewSkills').innerHTML = auxSkills;
-                    
+
                     modal.hide();
                     document.getElementById('profile-tab-maincard').style.display = "block";
                 } else {
-                    
+
                     modal.hide();
                     document.getElementById('profile-tab-maincard').style.display = "block";
                     showDialogWithMessage('dialog-invalid-message', 'Error loading profile!');
                 }
             } catch (e) {
-                
+
                 modal.hide();
                 document.getElementById('profile-tab-maincard').style.display = "block";
                 showDialogWithMessage('dialog-invalid-message', 'Error loading profile!');
             }
         };
 
-        xhr.onerror = function() {
-            
+        xhr.onerror = function () {
+
             modal.hide();
             document.getElementById('profile-tab-maincard').style.display = "block";
             showDialogWithMessage('dialog-invalid-message', 'Error loading profile!');
@@ -944,134 +951,140 @@ document.addEventListener('show', function(event) {
         xhr.send();
     }
 
-    
+
     function logoutUser() {
-    	
-    	document.querySelector('#Navigator').resetToPage('login.html');
+
+        document.querySelector('#Navigator').resetToPage('login.html');
     }
-    
-    
+
+
     function loadChats(prospectDetails) {
-    	
-    	// TODO: Load API to get messages
-    	
-    	chats = [];
-    	
-    	chats.push({message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: "1"});
-    	chats.push({message:"Test Message", prospectId: "1"});
-    	chats.push({message:"Test Message", prospectId: "1"});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Test Message", prospectId: prospectDetails.prospectId});
-    	chats.push({message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum", prospectId: prospectDetails.prospectId});
-    	
-    	var chatContainer = document.getElementById('chatMainContainer');
-    	chatContainer.innerHTML = '';
-    	
-    	for(var i = 0; i <chats.length; i++) {
-    	
-    		var html = '';
-    		
-    		var loggedinUser = localStorage.getItem('profileId') ? localStorage.getItem('profileId') : "1";
-    		
-    		if(chats[i].prospectId ==  loggedinUser) {
-    			
-    			
-    			html += '<ons-card style="background-color:#4080ff;color:white;min-height: 80px;display: table;width: 96%;">';
-    			html += '<div style="float:left;width:80%;">';
-    			html += '<p style="float:right;">' + chats[i].message + '</p>';
-    			html += '</div>';
-    			html += '<div style="float:right;width:20%;">';
-    			html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId='+ chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
-    			html += '</div>';
-    			html += '</ons-card>';
-    			
-    		}else {
-    			
-    			html += '<ons-card style="min-height: 80px;display: table;width: 96%;">';
-    			html += '<div style="float:left;width:20%;">';
-    			html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId='+ chats[i].prospectId + '" width="50" height="50"/>';
-    			html += '</div>';
-    			html += '<div style="float:right;width:80%;">';
-    			html += '<p style="float:left;">' + chats[i].message + '</p>';
-    			html += '</div>';
-    			html += '</ons-card>';
-    			
-    		}
-	    
-    		chatContainer.appendChild(ons.createElement(html));
-    	}
-    	
-    	$('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
+
+        // TODO: Load API to get messages
+
+        chats = [];
+
+        chats.push({
+            message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+            prospectId: prospectDetails.prospectId
+        });
+        chats.push({message: "Test Message", prospectId: "1"});
+        chats.push({message: "Test Message", prospectId: "1"});
+        chats.push({message: "Test Message", prospectId: "1"});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({message: "Test Message", prospectId: prospectDetails.prospectId});
+        chats.push({
+            message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+            prospectId: prospectDetails.prospectId
+        });
+
+        var chatContainer = document.getElementById('chatMainContainer');
+        chatContainer.innerHTML = '';
+
+        for (var i = 0; i < chats.length; i++) {
+
+            var html = '';
+
+            var loggedinUser = localStorage.getItem('profileId') ? localStorage.getItem('profileId') : "1";
+
+            if (chats[i].prospectId == loggedinUser) {
+
+
+                html += '<ons-card style="background-color:#4080ff;color:white;min-height: 80px;display: table;width: 96%;">';
+                html += '<div style="float:left;width:80%;">';
+                html += '<p style="float:right;">' + chats[i].message + '</p>';
+                html += '</div>';
+                html += '<div style="float:right;width:20%;">';
+                html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
+                html += '</div>';
+                html += '</ons-card>';
+
+            } else {
+
+                html += '<ons-card style="min-height: 80px;display: table;width: 96%;">';
+                html += '<div style="float:left;width:20%;">';
+                html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50"/>';
+                html += '</div>';
+                html += '<div style="float:right;width:80%;">';
+                html += '<p style="float:left;">' + chats[i].message + '</p>';
+                html += '</div>';
+                html += '</ons-card>';
+
+            }
+
+            chatContainer.appendChild(ons.createElement(html));
+        }
+
+        $('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
     }
-    
+
     function sendMessage() {
-    	
-    	if(document.getElementById('user-chat-input').value === '') {
-    	
-    		showDialogWithMessage('dialog-invalid-message', 'Enter your message.');
-    		return;
-    	}
-    	
-    	chats.push({message:document.getElementById('user-chat-input').value, prospectId: "1"});
-    	
-    	var i = chats.length - 1;
-    	
-    	var html = '';
-    	html += '<ons-card style="background-color:#4080ff;color:white;min-height: 80px;display: table;width: 96%;">';
-		html += '<div style="float:left;width:80%;">';
-		html += '<p style="float:right;">' + chats[i].message + '</p>';
-		html += '</div>';
-		html += '<div style="float:right;width:20%;">';
-		html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId='+ chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
-		html += '</div>';
-		html += '</ons-card>';
-		
-    	var chatContainer = document.getElementById('chatMainContainer');
-    	chatContainer.appendChild(ons.createElement(html));
-    	
-    	$('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
-    	
-    	 document.getElementById('user-chat-input').value = '';        
+
+        if (document.getElementById('user-chat-input').value === '') {
+
+            showDialogWithMessage('dialog-invalid-message', 'Enter your message.');
+            return;
+        }
+
+        chats.push({message: document.getElementById('user-chat-input').value, prospectId: "1"});
+
+        var i = chats.length - 1;
+
+        var html = '';
+        html += '<ons-card style="background-color:#4080ff;color:white;min-height: 80px;display: table;width: 96%;">';
+        html += '<div style="float:left;width:80%;">';
+        html += '<p style="float:right;">' + chats[i].message + '</p>';
+        html += '</div>';
+        html += '<div style="float:right;width:20%;">';
+        html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
+        html += '</div>';
+        html += '</ons-card>';
+
+        var chatContainer = document.getElementById('chatMainContainer');
+        chatContainer.appendChild(ons.createElement(html));
+
+        $('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
+
+        document.getElementById('user-chat-input').value = '';
     }
-    
+
 });
 
 
-var showDialogWithMessage = function(id, message) {
+var showDialogWithMessage = function (id, message) {
     document.getElementById('inner_error_message').innerHTML = message;
     document
         .getElementById(id)
         .show();
 };
 
-var showDialog = function(id) {
+var showDialog = function (id) {
     document
         .getElementById(id)
         .show();
 };
 
-var hideDialog = function(id) {
+var hideDialog = function (id) {
     document
         .getElementById(id)
         .hide();
 };
 
-function addToSkills(skillId){
+function addToSkills(skillId) {
     var skills = document.getElementById('skills').value;
-    if(typeof skills === 'undefined'){
+    if (typeof skills === 'undefined') {
         skills = '';
     }
-    if(document.getElementById("skill_"+skillId).className == "skillsSelected"){
-        document.getElementById("skill_"+skillId).className = "skills";
-        skills = skills.replace('[' + skillId + ']','');
-    }else{
-        document.getElementById("skill_"+skillId).className = "skillsSelected"
-        skills = skills + '[' + skillId+']';
+    if (document.getElementById("skill_" + skillId).className == "skillsSelected") {
+        document.getElementById("skill_" + skillId).className = "skills";
+        skills = skills.replace('[' + skillId + ']', '');
+    } else {
+        document.getElementById("skill_" + skillId).className = "skillsSelected"
+        skills = skills + '[' + skillId + ']';
     }
     document.getElementById('skills').value = skills;
     console.log(skills);
@@ -1093,17 +1106,17 @@ function searchSkillChanged(event) {
 }
 
 function chatWithProspect(id, prospectId, requestId) {
-	
-	
-	var name = "";
-	if(document.getElementById('prospectIdName_' + prospectId + '_' + id))
-		name = document.getElementById('prospectIdName_' + prospectId + '_' + id).innerHTML;
-	
-	var imageURL = "";
-	if(document.getElementById('prospectIdImage_' + prospectId + '_' + id))
-		imageURL = document.getElementById('prospectIdImage_' + prospectId + '_' + id).src;
 
-	document.querySelector('#Navigator').pushPage('chatProspect.html', {
+
+    var name = "";
+    if (document.getElementById('prospectIdName_' + prospectId + '_' + id))
+        name = document.getElementById('prospectIdName_' + prospectId + '_' + id).innerHTML;
+
+    var imageURL = "";
+    if (document.getElementById('prospectIdImage_' + prospectId + '_' + id))
+        imageURL = document.getElementById('prospectIdImage_' + prospectId + '_' + id).src;
+
+    document.querySelector('#Navigator').pushPage('chatProspect.html', {
         data: {
             title: 'Chat',
             prospectName: name ? name : "No Name",
@@ -1112,10 +1125,61 @@ function chatWithProspect(id, prospectId, requestId) {
             requestId: requestId
         }
     });
-	
+
 }
 
 function focusPage() {
-	
-	$('#login_container').animate({scrollTop: $('#login_container')[0].scrollHeight})
+
+    $('#login_container').animate({scrollTop: $('#login_container')[0].scrollHeight})
+}
+
+function flushDataToServer() {
+    if (navigator.connection.type === Connection.WIFI) {
+        console.log("Saving Data to Server");
+        var modal = document.querySelector('ons-modal');
+        modal.show();
+        var openReq = window.indexedDB.open("Profiles");
+        openReq.onsuccess = function (event) {
+            var db = openReq.result;
+            var addReq = db.transaction("profile", "readwrite");
+            var trans = db.transaction(["profile"], "readwrite");
+            var profile = trans.objectStore("profile");
+            // Get everything in the store;
+            var keyRange = IDBKeyRange.lowerBound(0);
+            var cursorRequest = profile.openCursor(keyRange);
+            cursorRequest.onsuccess = function (e) {
+                var result = e.target.result;
+                if (result) {
+                    console.log(result.value);
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
+                    xhr.setRequestHeader("Accept", "application/json");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onload = function () {
+                        try {
+                            if (this.status === 200) {
+                                //console.log(data);
+                            } else {
+                                showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
+                            }
+                        } catch (e) {
+                            showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        showDialogWithMessage('dialog-invalid-message', 'Error creating Profiles!');
+                    };
+                    xhr.send(JSON.stringify(result.value));
+                    profile.delete(result.key);
+                    result.continue();
+                } else {
+                    console.log('No data Found')
+                }
+
+            };
+            modal.hide();
+            console.log(addReq);
+        }
+    }
 }
