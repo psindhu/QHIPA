@@ -310,6 +310,7 @@ document.addEventListener('show', function (event) {
                     } else {
                         sessionStorage.setItem('selectedSearchSkill', '1');
                         sessionStorage.setItem('tabLoaderId', 0);
+
                         localStorage.setItem('profileId', data['profileId']);
                         document.querySelector('#Navigator').pushPage('tabbar.html', {
                             data: {

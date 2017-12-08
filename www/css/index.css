@@ -120,18 +120,14 @@ h1 {
 /* */
 
 .page__background {
-/*    width:100%;*/
-/*    height:100%;*/
-/*    background:url(../img/background.jpg) ;*/
-/*    background-size: cover;*/
-/*    background-repeat: no-repeat;*/
-
-    
-/*    background-image:url('../img/background.jpg');*/
-/*    background-repeat:no-repeat;*/
-/*    background-size:contain;*/
-/*    background-position:center;*/
-    background-color : #EAE6E2 !important;
+width:100%;
+height:100%;
+    background: url(../img/background.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*background-color : #EAE6E2 !important;*/
 }
 
 
@@ -324,4 +320,11 @@ background-image: linear-gradient(0deg, #ccc, #ccc 50%, transparent 50%) !import
 }
 #userlocation_map_canvas{
     min-height: 300px;
+}
+#login_container {
+    background: url(../img/background_login.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
