@@ -127,7 +127,20 @@ document.addEventListener('show', function (event) {
 
     if (page.id === 'searchskills') {
 
+
         getSearcherLocation();
+
+        page.querySelector('#search-button').onclick = function () {
+            var dialog = document.getElementById('search-filter-dialog');
+            if (dialog) {
+                dialog.show();
+            } else {
+                ons.createDialog('searchdialog.html')
+                    .then(function (dialog) {
+                        dialog.show();
+                    });
+            }
+        };
 
         page.querySelector('#search-button').onclick = function () {
             var dialog = document.getElementById('search-filter-dialog');
@@ -198,7 +211,6 @@ document.addEventListener('show', function (event) {
             sendMessage(page.data);
         };
     }
-
 
     function verifyLogin() {
 
@@ -455,6 +467,10 @@ document.addEventListener('show', function (event) {
         console.log('Map ready');
     }
 
+    function refreshSearchOnMap(){
+        hideDialog('search-filter-dialog');
+    }
+
     function buildMapSearch(lat, long) {
 
         var modal = document.querySelector('ons-modal');
@@ -483,10 +499,11 @@ document.addEventListener('show', function (event) {
         //circle
 
         var bounds = new google.maps.LatLngBounds();
-
+        var urlToSearchProfile = "http://" + hostUser + "/QuipaServer/services/profileservice/profile/skills/" + sessionStorage.getItem('selectedSearchSkill') + "/latitude/" + lat + "/longitude/" + long + "/profileId/" + localStorage.getItem('profileId');
+        console.log(urlToSearchProfile);
         var prospects = [];
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profile");
+        xhr.open("GET", urlToSearchProfile);
         xhr.setRequestHeader("Accept", "application/json");
         xhr.onload = function () {
             modal.hide();
@@ -1139,6 +1156,7 @@ function getBase64Image(img) {
 
 function searchSkillChanged(event) {
     console.log(event.value);
+    sessionStorage.setItem('selectedSearchSkill', event.value);
     document.getElementById('skill_search_image').src = skillObj[event.value];
 }
 
