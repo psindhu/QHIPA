@@ -72,15 +72,16 @@ document.addEventListener('show', function (event) {
         
         loadHiredAsync();
         
+        loadRequestAsync();
         
         // Load Notification Timer
         
         setInterval(function() {
         	
-        	loadNotifications();
+        	loadNotificationsHired();
+        	loadNotificationsRequests();
         	
         }, 2000);
-
         
     }
 
@@ -228,6 +229,19 @@ document.addEventListener('show', function (event) {
 
     if (page.id === 'myrequests') {
     
+    	// Save current date time 
+    	var d = new Date,
+        dformat = [ (d.getMonth()+1).padLeft(),
+                    d.getDate().padLeft(),
+                    d.getFullYear()].join('/')+
+                    '_' +
+                  [ d.getHours().padLeft(),
+                    d.getMinutes().padLeft(),
+                   d.getSeconds()].join(':');
+    	
+    	localStorage.setItem('saveLastDateRequests', dformat);
+    	document.getElementById('request-tab-notif').removeAttribute("badge");
+    	
     	loadRequests();
                               
     }
@@ -961,6 +975,8 @@ document.addEventListener('show', function (event) {
     
     function loadRequests() {
         
+    	requestIdRequests = [];
+    	
         var modal = document.querySelector('ons-modal');
         modal.show();
       
@@ -1001,6 +1017,7 @@ document.addEventListener('show', function (event) {
                           statusColor = "orange";
                     }
                           
+                    requestIdRequests.push(currentItem['requestId']);
                           
                     prospectIdList.push(currentItem['prospectId'] + '_' + i);
                           
@@ -1142,6 +1159,61 @@ document.addEventListener('show', function (event) {
     	  });
     }
     
+    async function loadRequestAsync() {
+    	
+    	requestIdRequests = [];
+    	
+	  	let v;
+	  	try {
+	  	    v = await downloadAsyncDataRequest(); 
+	  	} catch(e) {
+	  	    
+	  	}
+  	  
+	  	var data = JSON.parse(v.response);
+	  	
+		for (var i = data.length - 1; i >= 0; i--) {
+		
+		    var currentItem = data[i];
+		    requestIdRequests.push(currentItem['requestId']);
+		}
+		
+		console.log("Request Ids - ", requestIdRequests);
+    }
+    
+    function downloadAsyncDataRequest() {
+        
+    	return new Promise(function (resolve, reject) {
+    	    
+    		var profileId = localStorage.getItem('profileId');
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/requestservice/request/prospectId/" + profileId);
+            xhr.setRequestHeader("Accept", "application/json");
+            
+    		xhr.onload = function () {
+    	      if (this.status == 200) {
+    	        resolve({
+    	          status: this.status,
+    	          response: xhr.response
+    	        });
+    	      } else {
+    	        reject({
+    	          status: this.status,
+    	          statusText: xhr.statusText
+    	        });
+    	      }
+    	    };
+    	    xhr.onerror = function () {
+    	      reject({
+    	        status: this.status,
+    	        statusText: xhr.statusText
+    	      });
+    	    };
+    	    
+    	    xhr.send();
+    	  });
+    }
+
     function displayCreatedProfile() {
         var profile = loadProfile();
         document.getElementById('previewName_created').innerHTML = profile['name'];
@@ -1431,18 +1503,31 @@ document.addEventListener('show', function (event) {
     
     /* Load Notifications */
     
-	async function loadNotifications() {
-	    	
+	async function loadNotificationsHired() {
+	    
+		console.log("Load Notification for Hired");
 	  let v;
 	  try {
-	    v = await downloadLatestNotifMessages(); 
+	    v = await downloadLatestNotifMessagesHired(); 
 	  } catch(e) {
 	    
 	  }
-	  return processLatestNotifMessages(v);
+	  return processLatestNotifMessagesHired(v);
 	}
 	  
-	function downloadLatestNotifMessages() {
+	async function loadNotificationsRequests() {
+    	
+		console.log("Load Notification for Requests");
+		  let v;
+		  try {
+		    v = await downloadLatestNotifMessagesRequests(); 
+		  } catch(e) {
+		    
+		  }
+		  return processLatestNotifMessagesRequests(v);
+	}
+	
+	function downloadLatestNotifMessagesHired() {
 	      
 	  	return new Promise(function (resolve, reject) {
 	  	    
@@ -1460,6 +1545,7 @@ document.addEventListener('show', function (event) {
 	  			
 	  			localStorage.setItem('saveLastDateHired', dformat);
 	  		}
+	  		
 	  		var dateFormatted = localStorage.getItem('saveLastDateHired');
 	  		
 	  		console.log("Formatted date for API - ", dateFormatted);
@@ -1490,8 +1576,58 @@ document.addEventListener('show', function (event) {
 	  	    xhr.send();
 	  	  });
 	}
+	
+	function downloadLatestNotifMessagesRequests() {
+	      
+	  	return new Promise(function (resolve, reject) {
+	  	    
+	  		var d = new Date,
+	        dformat = [ (d.getMonth()+1).padLeft(),
+	                    d.getDate().padLeft(),
+	                    d.getFullYear()].join('/')+
+	                    '_' +
+	                  [ d.getHours().padLeft(),
+	                    d.getMinutes().padLeft(),
+                       d.getSeconds()].join(':');
+	  		var profileId = localStorage.getItem('profileId');
+	  			
+	  		if(localStorage.getItem('saveLastDateRequests') == null) {
+	  			
+	  			localStorage.setItem('saveLastDateRequests', dformat);
+	  		}
+	  		
+	  		var dateFormatted = localStorage.getItem('saveLastDateHired');
+	  		
+	  		console.log("Formatted date for API - ", dateFormatted);
+	  		var xhr = new XMLHttpRequest();
+	        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/messageservice/message/profileId/" + profileId + '?createdDate=' + localStorage.getItem('saveLastDateRequests'));
+	        xhr.setRequestHeader("Accept", "application/json");
+	          
+	  	    xhr.onload = function () {
+	  	      if (this.status == 200) {
+	  	        resolve({
+	  	          status: this.status,
+	  	          response: xhr.response
+	  	        });
+	  	      } else {
+	  	        reject({
+	  	          status: this.status,
+	  	          statusText: xhr.statusText
+	  	        });
+	  	      }
+	  	    };
+	  	    xhr.onerror = function () {
+	  	      reject({
+	  	        status: this.status,
+	  	        statusText: xhr.statusText
+	  	      });
+	  	    };
+	  	    
+	  	    xhr.send();
+	  	  });
+	}
 	  
-	function processLatestNotifMessages(messages) {
+	function processLatestNotifMessagesHired(messages) {
 		  
 		 console.log("Notification Messages - ", messages); 
 		 console.log("requestIdHired - ", requestIdHired);
@@ -1512,12 +1648,44 @@ document.addEventListener('show', function (event) {
 						 
 						 count++;
 						 requestIdHired.push(currentItem['requestId']);
-					 } 
+					 }
 		         }
 				 
 				 console.log("Count - ", count);
 				 if(count > 0)
 					 document.getElementById('hired-tab-notif').setAttribute("badge", ""+count);
+				 
+			 }
+		 }
+	}
+	
+	function processLatestNotifMessagesRequests(messages) {
+		  
+		 console.log("Notification Messages - ", messages); 
+		 console.log("requestIdHired - ", requestIdHired);
+		 
+		 if(messages != null) {
+			
+			 if(messages.status === 200) {
+					
+				 var data = JSON.parse(messages.response);
+				 
+				 var countRequests = 0;
+				 for (var i = 0; i < data.length; i++) {
+					 
+					 var currentItem = data[i];
+					 console.log("currentItem - ", currentItem);
+					 
+					 if(requestIdRequests.indexOf(currentItem['requestId']) > -1) {
+						 
+						 countRequests++;
+						 requestIdRequests.push(currentItem['requestId']);
+					 }
+		         }
+				 
+				 console.log("CountRequests - ", countRequests);
+				 if(countRequests > 0)
+					 document.getElementById('request-tab-notif').setAttribute("badge", ""+countRequests);
 				 
 			 }
 		 }
