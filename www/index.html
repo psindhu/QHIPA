@@ -290,8 +290,8 @@
     <ons-page id="tabbar-page">
         <ons-tabbar id="appTabbar" style="background-color:#58373C;" position="bottom">
             <ons-tab label="Search" icon="ion-ios-search" page="search.html"></ons-tab>
-            <ons-tab label="Requests" icon="ion-ios-heart-outline" page="myrequests.html"></ons-tab>
-            <ons-tab label="Hired" icon="ion-card" page="hired.html"></ons-tab>
+            <ons-tab label="Requests" icon="ion-clipboard" page="myrequests.html"></ons-tab>
+            <ons-tab label="Hired" icon="ion-card" page="hired.html" id="hired-tab-notif"></ons-tab>
             <ons-tab label="Inbox" icon="ion-email" page="inbox.html"></ons-tab>
             <ons-tab label="Profile" icon="ion-ios-person-outline" page="profile.html"></ons-tab>
         </ons-tabbar>
@@ -421,10 +421,14 @@
 
 <!--- Favorites ------->
 <template id="myrequests.html">
-    <ons-page id="forms-page">
+    <ons-page id="myrequests">
         <ons-toolbar>
             <div class="center">Requests</div>
         </ons-toolbar>
+        <div id="request-container">
+            <ons-list id="requestContent">
+            </ons-list>
+        </div>
     </ons-page>
 </template>
 <!--- Favorites ------->

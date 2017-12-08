@@ -10,8 +10,14 @@ var skillObj = {
     9: "img/waitress.png",
     10: "img/window_cleaner.png"
 };
+
 var hostUser = "18.220.231.8";
 var chats = [];
+var hiredMessageIds = [];
+var hiredChatInterval;
+
+var requestIdHired = [];
+var requestIdRequests = [];
 
 document.addEventListener('init', function (event) {
 
@@ -38,6 +44,16 @@ document.addEventListener('init', function (event) {
 
 });
 
+document.addEventListener('hide', function (event) {
+	
+	var page = event.target;
+    
+	if (page.id === 'chatProspect') {
+        
+		clearInterval(hiredChatInterval);
+	}
+});
+
 document.addEventListener('show', function (event) {
 
     var page = event.target;
@@ -51,6 +67,21 @@ document.addEventListener('show', function (event) {
             document.getElementById('appTabbar').setActiveTab(2);
             sessionStorage.setItem('tabLoaderId', 0);
         }
+        
+        console.log("Login Flow");
+        
+        loadHiredAsync();
+        
+        
+        // Load Notification Timer
+        
+        setInterval(function() {
+        	
+        	loadNotifications();
+        	
+        }, 2000);
+
+        
     }
 
     if (page.id === 'login') {
@@ -141,18 +172,6 @@ document.addEventListener('show', function (event) {
                     });
             }
         };
-
-        page.querySelector('#search-button').onclick = function () {
-            var dialog = document.getElementById('search-filter-dialog');
-            if (dialog) {
-                dialog.show();
-            } else {
-                ons.createDialog('searchdialog.html')
-                    .then(function (dialog) {
-                        dialog.show();
-                    });
-            }
-        };
     }
 
     if (page.id === 'profilecreated') {
@@ -189,7 +208,27 @@ document.addEventListener('show', function (event) {
 
     if (page.id === 'requestHired') {
 
+    	// Save current date time 
+    	var d = new Date,
+        dformat = [ (d.getMonth()+1).padLeft(),
+                    d.getDate().padLeft(),
+                    d.getFullYear()].join('/')+
+                    '_' +
+                  [ d.getHours().padLeft(),
+                    d.getMinutes().padLeft()].join(':');
+    	
+    	localStorage.setItem('saveLastDateHired', dformat);
+    	document.getElementById('hired-tab-notif').removeAttribute("badge");
+    	
+    	
         loadHired();
+    }
+    
+
+    if (page.id === 'myrequests') {
+    
+    	loadRequests();
+                              
     }
 
     if (page.id === 'profilePage') {
@@ -205,7 +244,13 @@ document.addEventListener('show', function (event) {
     if (page.id === 'chatProspect') {
 
         loadChats(page.data);
-
+        
+        hiredChatInterval = setInterval(function() {
+        	
+        	loadAsyncChat(page.data);
+        	
+        }, 5000);
+        
         page.querySelector('#chat-message-send-button').onclick = function () {
 
             sendMessage(page.data);
@@ -736,6 +781,8 @@ document.addEventListener('show', function (event) {
 
     function loadHired() {
 
+    	requestIdHired = [];
+    	
         var modal = document.querySelector('ons-modal');
         modal.show();
 
@@ -776,7 +823,8 @@ document.addEventListener('show', function (event) {
                         if (currentItem['status'].toLowerCase() === 'pending') {
                             statusColor = "orange";
                         }
-
+                        
+                        requestIdHired.push(currentItem['requestId']);
 
                         prospectIdList.push(currentItem['prospectId'] + '_' + i);
 
@@ -906,9 +954,193 @@ document.addEventListener('show', function (event) {
             var modal = document.querySelector('ons-modal');
             modal.hide();
             document.getElementById('myrequest-container').style.display = "block";
+            document.getElementById('request-container').style.display = "block";
         }
     }
+    
+    function loadRequests() {
+        
+        var modal = document.querySelector('ons-modal');
+        modal.show();
+      
+        document.getElementById('request-container').style.display = "none";
+      
+        var element = document.getElementById("requestContent");
+        element.innerHTML = '';
+      
+        var profileId = localStorage.getItem('profileId');
+      
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/requestservice/request/prospectId/" + profileId);
+        xhr.setRequestHeader("Accept", "application/json");
+                          
+        xhr.onload = function () {
+                          
+        try {
+            if (this.status === 200) {
+                          
+                var data = JSON.parse(this.response);
+                console.log(JSON.stringify(data));
+                          
+                if (data.length == 0) {
+                          
+                    modal.hide();
+                    document.getElementById('request-container').style.display = "block";
+                    showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
+                    return;
+                }
+                          
+                element.innerHTML = '';
+                          
+                var j = 0;
+                for (var i = data.length - 1; i >= 0; i--) {
+                    var currentItem = data[i];
+                    var statusColor = "green";
+                    if (currentItem['status'].toLowerCase() === 'pending') {
+                          statusColor = "orange";
+                    }
+                          
+                          
+                    prospectIdList.push(currentItem['prospectId'] + '_' + i);
+                          
+                    var bgColor = '#DFDFDF;';
+                    if (j % 2 == 0) {
+                        bgColor = '#FFFFFF;';
+                    }
+                    j++;
 
+                    element.appendChild(ons.createElement(
+                        '<ons-list-item style="background-color:' + bgColor + '">' +
+                        
+                        '<div class="center" style="width:70% !important;">' +
+                        '<div>' +
+                        '<span style="float:left;margin-bottom: 20px;font-size:18px;font-weight:bold;" id="prospectIdName_' + currentItem['prospectId'] + '_' + i + '">No Name</span>' +
+                        '</div>' +
+                        '<div style="width:100%;"><div style="float:left;">' +
+                        '<img src="' + skillObj[currentItem['requiredSkill'][1]] + '" style="float:left;" width="50" height="50">' +
+                        '<span style="float:left;margin-left:20px;line-height: 50px;font-size:15px;font-weight:normal;">for ' + currentItem['hours'] + ' hours</span></div>' +
+                        '<div style="float:right;">' +
+                        '<ons-button onclick="chatWithProspect(' + i + ', ' + currentItem['prospectId'] + ', ' + currentItem['requestId'] + ')" style="margin:0px;background-color:green !important;margin-right:20px;">CHAT</ons-button>' +
+                        '</div>' +
+                        
+                        '</div>' +
+                        '<div  style="width:100%;height:30px;">' +
+                        '<span style="float:left;font-size:15px;line-height: 30px;">on </span>' +
+                        '<span style="float:right;padding-right:20px;font-size:15px;line-height: 30px;font-weight:medium;">10-19-2017</span>' +
+                        '</div><br/><br/>' +
+                        '<div  style="width:100%;height:30px;">' +
+                        '<span style="float:left;font-size:15px;line-height: 30px;">from</span>' +
+                        '<span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">' + currentItem['fromHour'] + '</span>' +
+                        '</div><br/><br/>' +
+                        '<div  style="width:100%;height:30px;">' +
+                        '<span style="float:left;font-size:15px;line-height: 30px;">to</span>' +
+                        '<span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">' + currentItem['toHour'] + '</span>' +
+                        '</div><br/><br/>' +
+                        '<div  style="width:100%;height:40px;">' +
+                        '<span style="float:left;font-size:15px;line-height: 40px;">Total</span>' +
+                        '<span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 40px;">$' + currentItem['total'] + '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="left" style="width:30% !important;">' +
+                        
+                        
+                        '<div style="float:left;height:100%;text-align:center;">' +
+                        
+                        '<br clear="all"/>' +
+                        
+                        '<img src="img/image_loader.gif" style="max-width:100%;max-height:100%"  id="prospectIdImage_' + currentItem['prospectId'] + '_' + i + '" />' +
+                        '<br clear="all"/><br clear="all"/>' +
+                        '<div style="float:left;width:100%;bottom:0px;margin-bottom:15px;margin-top:10px;">' +
+                        '<ons-button onclick="" style="background:' + statusColor + ' !important;">' + currentItem['status'] + '</ons-button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</ons-list-item>'
+                    ));
+
+                }
+      
+                setTimeout(function () {
+                    loadProspectDetails();
+                }, 1000);
+
+            } else {
+                modal.hide();
+                document.getElementById('request-container').style.display = "block";
+                showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
+            }
+        } catch (e) {
+            modal.hide();
+            document.getElementById('request-container').style.display = "block";
+            showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
+        }
+      };
+      xhr.onerror = function () {
+                          
+        modal.hide();
+        document.getElementById('request-container').style.display = "block";
+        showDialogWithMessage('dialog-invalid-message', 'No Requests Founds!');
+                          
+      };
+                          
+      xhr.send();
+    }
+
+    async function loadHiredAsync() {
+    	
+    	requestIdHired = [];
+    	
+	  	let v;
+	  	try {
+	  	    v = await downloadAsyncDataHired(); 
+	  	} catch(e) {
+	  	    
+	  	}
+  	  
+	  	var data = JSON.parse(v.response);
+	  	
+		for (var i = data.length - 1; i >= 0; i--) {
+		
+		    var currentItem = data[i];
+		    requestIdHired.push(currentItem['requestId']);
+		}
+		
+		console.log("Request Ids - ", requestIdHired);
+    }
+    
+    function downloadAsyncDataHired() {
+        
+    	return new Promise(function (resolve, reject) {
+    	    
+    		var profileId = localStorage.getItem('profileId');
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/requestservice/request/profileId/" + profileId);
+            xhr.setRequestHeader("Accept", "application/json");
+            
+    		xhr.onload = function () {
+    	      if (this.status == 200) {
+    	        resolve({
+    	          status: this.status,
+    	          response: xhr.response
+    	        });
+    	      } else {
+    	        reject({
+    	          status: this.status,
+    	          statusText: xhr.statusText
+    	        });
+    	      }
+    	    };
+    	    xhr.onerror = function () {
+    	      reject({
+    	        status: this.status,
+    	        statusText: xhr.statusText
+    	      });
+    	    };
+    	    
+    	    xhr.send();
+    	  });
+    }
+    
     function displayCreatedProfile() {
         var profile = loadProfile();
         document.getElementById('previewName_created').innerHTML = profile['name'];
@@ -987,12 +1219,15 @@ document.addEventListener('show', function (event) {
 
     function loadChats(prospectDetails) {
 
+    	chats = [];
+        hiredMessageIds = [];
+        
         var profileId = localStorage.getItem('profileId');
-
+        
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/messageservice/message/requestId/" + prospectDetails.requestId);
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/messageservice/message/requestId/" + prospectDetails.requestId);
         xhr.setRequestHeader("Accept", "application/json");
-        chats = [];
+        
         xhr.onload = function () {
             try {
                 if (this.status === 200) {
@@ -1001,6 +1236,8 @@ document.addEventListener('show', function (event) {
                     for (var i = 0; i < data.length; i++) {
                         var currentItem = data[i];
                         chats.push({message: currentItem['content'], prospectId: currentItem['profileId']});
+                        
+                        hiredMessageIds.push(currentItem['messageId']);
                     }
                           
                   var chatContainer = document.getElementById('chatMainContainer');
@@ -1038,7 +1275,7 @@ document.addEventListener('show', function (event) {
                       }
                   
                       chatContainer.appendChild(ons.createElement(html));
-                      }
+                  }
                   
                   $('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
 
@@ -1053,6 +1290,88 @@ document.addEventListener('show', function (event) {
 
     }
 
+    async function loadAsyncChat(prospectDetails) {
+    	
+	  let v;
+	  try {
+	    v = await downloadAsyncDataHiredChat(prospectDetails); 
+	  } catch(e) {
+	    
+	  }
+	  return processDataAsyncDataHiredChat(v);
+    }
+    
+    function downloadAsyncDataHiredChat(prospectDetails) {
+        
+    	return new Promise(function (resolve, reject) {
+    	    
+    		var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/messageservice/message/requestId/" + prospectDetails.requestId);
+            xhr.setRequestHeader("Accept", "application/json");
+            
+    	    xhr.onload = function () {
+    	      if (this.status == 200) {
+    	        resolve({
+    	          status: this.status,
+    	          response: xhr.response
+    	        });
+    	      } else {
+    	        reject({
+    	          status: this.status,
+    	          statusText: xhr.statusText
+    	        });
+    	      }
+    	    };
+    	    xhr.onerror = function () {
+    	      reject({
+    	        status: this.status,
+    	        statusText: xhr.statusText
+    	      });
+    	    };
+    	    
+    	    xhr.send();
+    	  });
+    }
+    
+    function processDataAsyncDataHiredChat(response) {
+    	
+    	if(response != null) {
+    		
+    		if(response.status === 200) {
+        		
+        		var data = JSON.parse(response.response);
+        		var loggedinUser = localStorage.getItem('profileId') ? localStorage.getItem('profileId') : "1";
+        		
+        		var newChats = [];
+                for (var i = 0; i < data.length; i++) {
+                    
+                	var currentItem = data[i];
+                
+                    if(hiredMessageIds.indexOf(currentItem['messageId']) == -1 && currentItem['profileId'] != loggedinUser) {
+                    	
+                    	chats.push({message: currentItem['content'], prospectId: currentItem['profileId']});
+                    	hiredMessageIds.push(currentItem['messageId']);
+                    	
+                    	var chatContainer = document.getElementById('chatMainContainer');
+                    	var html = '';
+                	    html += '<ons-card style="min-height: 80px;display: table;width: 96%;">';
+                        html += '<div style="float:left;width:20%;">';
+                        html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50"/>';
+                        html += '</div>';
+                        html += '<div style="float:right;width:80%;">';
+                        html += '<p style="float:left;">' + chats[i].message + '</p>';
+                        html += '</div>';
+                        html += '</ons-card>';
+                        
+                        chatContainer.appendChild(ons.createElement(html));
+                    }
+                }
+                
+                $('#chatMainContainer').animate({scrollTop: $('#chatMainContainer')[0].scrollHeight})
+        	}
+    	}
+    }
+    
     function sendMessage(data) {
         
         var profileId = localStorage.getItem('profileId');
@@ -1063,7 +1382,7 @@ document.addEventListener('show', function (event) {
             return;
         }
 
-        chats.push({message: document.getElementById('user-chat-input').value, profileId: profileId});
+        chats.push({message: document.getElementById('user-chat-input').value, prospectId: profileId});
 
         var i = chats.length - 1;
 
@@ -1073,7 +1392,7 @@ document.addEventListener('show', function (event) {
         html += '<p style="float:right;">' + chats[i].message + '</p>';
         html += '</div>';
         html += '<div style="float:right;width:20%;">';
-        html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].profileId + '" width="50" height="50" style="float:right;"/>';
+        html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
         html += '</div>';
         html += '</ons-card>';
 
@@ -1089,13 +1408,14 @@ document.addEventListener('show', function (event) {
         };
         const xhr = new XMLHttpRequest();
                           
-        xhr.open("POST", "http://18.220.231.8/QuipaServer/services/messageservice/message/");
+        xhr.open("POST", "http://" + hostUser + "/QuipaServer/services/messageservice/message/");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function () {
             try {
                 if (this.status === 200) {
                     document.getElementById('user-chat-input').value = '';
+                    
                 } else {
                     showDialogWithMessage('dialog-invalid-message', 'Error saving Chat!');
                 }
@@ -1106,6 +1426,101 @@ document.addEventListener('show', function (event) {
         xhr.send(JSON.stringify(message));
                           
     }
+    
+    
+    /* Load Notifications */
+    
+	async function loadNotifications() {
+	    	
+	  let v;
+	  try {
+	    v = await downloadLatestNotifMessages(); 
+	  } catch(e) {
+	    
+	  }
+	  return processLatestNotifMessages(v);
+	}
+	  
+	function downloadLatestNotifMessages() {
+	      
+	  	return new Promise(function (resolve, reject) {
+	  	    
+	  		var d = new Date,
+	        dformat = [ (d.getMonth()+1).padLeft(),
+	                    d.getDate().padLeft(),
+	                    d.getFullYear()].join('/')+
+	                    '_' +
+	                  [ d.getHours().padLeft(),
+	                    d.getMinutes().padLeft()].join(':');
+	  		var profileId = localStorage.getItem('profileId');
+	  			
+	  		if(localStorage.getItem('saveLastDateHired') == null) {
+	  			
+	  			localStorage.setItem('saveLastDateHired', dformat);
+	  		}
+	  		var dateFormatted = localStorage.getItem('saveLastDateHired');
+	  		
+	  		console.log("Formatted date for API - ", dateFormatted);
+	  		var xhr = new XMLHttpRequest();
+	        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/messageservice/message/profileId/" + profileId + '?createdDate=' + localStorage.getItem('saveLastDateHired'));
+	        xhr.setRequestHeader("Accept", "application/json");
+	          
+	  	    xhr.onload = function () {
+	  	      if (this.status == 200) {
+	  	        resolve({
+	  	          status: this.status,
+	  	          response: xhr.response
+	  	        });
+	  	      } else {
+	  	        reject({
+	  	          status: this.status,
+	  	          statusText: xhr.statusText
+	  	        });
+	  	      }
+	  	    };
+	  	    xhr.onerror = function () {
+	  	      reject({
+	  	        status: this.status,
+	  	        statusText: xhr.statusText
+	  	      });
+	  	    };
+	  	    
+	  	    xhr.send();
+	  	  });
+	}
+	  
+	function processLatestNotifMessages(messages) {
+		  
+		 console.log("Notification Messages - ", messages); 
+		 console.log("requestIdHired - ", requestIdHired);
+		 
+		 if(messages != null) {
+			
+			 if(messages.status === 200) {
+					
+				 var data = JSON.parse(messages.response);
+				 
+				 var count = 0;
+				 for (var i = 0; i < data.length; i++) {
+					 
+					 var currentItem = data[i];
+					 console.log("currentItem - ", currentItem);
+					 
+					 if(requestIdHired.indexOf(currentItem['requestId']) > -1) {
+						 
+						 count++;
+						 requestIdHired.push(currentItem['requestId']);
+					 } 
+		         }
+				 
+				 console.log("Count - ", count);
+				 if(count > 0)
+					 document.getElementById('hired-tab-notif').setAttribute("badge", ""+count);
+				 
+			 }
+		 }
+	}
+	    
 });
 
 
@@ -1152,6 +1567,11 @@ function getBase64Image(img) {
     ctx.drawImage(img, 0, 0, img.width, img.height);
     var dataURL = canvas.toDataURL("image/png");
     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
+Number.prototype.padLeft = function(base,chr){
+	   var  len = (String(base || 10).length - String(this).length)+1;
+	   return len > 0? new Array(len).join(chr || '0')+this : this;
 }
 
 function searchSkillChanged(event) {
