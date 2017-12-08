@@ -10,7 +10,7 @@ var skillObj = {
     9: "img/waitress.png",
     10: "img/window_cleaner.png"
 };
-
+var hostUser = "18.220.231.8";
 var chats = [];
 
 document.addEventListener('init', function (event) {
@@ -208,7 +208,7 @@ document.addEventListener('show', function (event) {
         var modal = document.querySelector('ons-modal');
         modal.show();
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profileLogin?mobilePhoneNumber=" + username + "&password=" + password);
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profileLogin?mobilePhoneNumber=" + username + "&password=" + password);
         xhr.setRequestHeader("Accept", "application/json");
 
         xhr.onload = function () {
@@ -364,7 +364,7 @@ document.addEventListener('show', function (event) {
         modal.show();
         var profile = loadProfile();
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
+        xhr.open("POST", "http://" + hostUser + "/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function () {
@@ -459,6 +459,10 @@ document.addEventListener('show', function (event) {
         showDialogWithMessage('dialog-invalid-message', error.message);
     }
 
+    function onMapReady() {
+        console.log('Map ready');
+    }
+
     function buildMapSearch(lat, long) {
 
         var modal = document.querySelector('ons-modal');
@@ -469,21 +473,31 @@ document.addEventListener('show', function (event) {
         // set required options
         var mapOptions = {
             center: latlong,
-            zoom: 10,
+            zoom: 15,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("search_map"), mapOptions);
+       //Circle
+        var cityCircle = new google.maps.Circle({
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: map,
+            center: latlong,
+            radius: 400
+        });
+        //circle
 
         var bounds = new google.maps.LatLngBounds();
 
         var prospects = [];
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.onload = function () {
-
             modal.hide();
-
             try {
                 if (this.status === 200) {
                     var data = JSON.parse(this.response);
@@ -557,7 +571,7 @@ document.addEventListener('show', function (event) {
         var prospectId = sessionStorage.getItem('prospectIdProfileHire');
 
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + prospectId);
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profile/" + prospectId);
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function () {
@@ -682,7 +696,7 @@ document.addEventListener('show', function (event) {
         };
         const xhr = new XMLHttpRequest();
 
-        xhr.open("POST", "http://18.220.231.8/QuipaServer/services/requestservice/request/");
+        xhr.open("POST", "http://" + hostUser + "/QuipaServer/services/requestservice/request/");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -724,7 +738,7 @@ document.addEventListener('show', function (event) {
         var profileId = localStorage.getItem('profileId');
 
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/requestservice/request?profileId=" + profileId);
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/requestservice/request?profileId=" + profileId);
         xhr.setRequestHeader("Accept", "application/json");
 
         xhr.onload = function () {
@@ -846,7 +860,7 @@ document.addEventListener('show', function (event) {
             var itemMain = prospectIdList.pop();
             var itemArray = itemMain.split('_');
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + itemArray[0]);
+            xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profile/" + itemArray[0]);
             xhr.setRequestHeader("Accept", "application/json");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onload = function () {
@@ -908,7 +922,7 @@ document.addEventListener('show', function (event) {
         document.getElementById('profile-tab-maincard').style.display = "none";
         var profileId = localStorage.getItem('profileId');
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://18.220.231.8/QuipaServer/services/profileservice/profile/" + profileId);
+        xhr.open("GET", "http://" + hostUser + "/QuipaServer/services/profileservice/profile/" + profileId);
         xhr.setRequestHeader("Accept", "application/json");
         xhr.onload = function () {
             try {
@@ -1003,7 +1017,7 @@ document.addEventListener('show', function (event) {
                 html += '<p style="float:right;">' + chats[i].message + '</p>';
                 html += '</div>';
                 html += '<div style="float:right;width:20%;">';
-                html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
+                html += '<img src="http://" + hostUser + "/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
                 html += '</div>';
                 html += '</ons-card>';
 
@@ -1011,7 +1025,7 @@ document.addEventListener('show', function (event) {
 
                 html += '<ons-card style="min-height: 80px;display: table;width: 96%;">';
                 html += '<div style="float:left;width:20%;">';
-                html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50"/>';
+                html += '<img src="http://" + hostUser + "/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50"/>';
                 html += '</div>';
                 html += '<div style="float:right;width:80%;">';
                 html += '<p style="float:left;">' + chats[i].message + '</p>';
@@ -1044,7 +1058,7 @@ document.addEventListener('show', function (event) {
         html += '<p style="float:right;">' + chats[i].message + '</p>';
         html += '</div>';
         html += '<div style="float:right;width:20%;">';
-        html += '<img src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
+        html += '<img src="http://" + hostUser + "/QuipaServer/viewProfilePicture.html?profileId=' + chats[i].prospectId + '" width="50" height="50" style="float:right;"/>';
         html += '</div>';
         html += '</ons-card>';
 
@@ -1124,7 +1138,7 @@ function chatWithProspect(id, prospectId, requestId) {
         data: {
             title: 'Chat',
             prospectName: name ? name : "No Name",
-            prospectImage: imageURL ? imageURL : "http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=1",
+            prospectImage: imageURL ? imageURL : "http://"  + hostUser +  "/QuipaServer/viewProfilePicture.html?profileId=1",
             prospectId: prospectId,
             requestId: requestId
         }
@@ -1156,7 +1170,7 @@ function flushDataToServer() {
                 if (result) {
                     console.log(result.value);
                     const xhr = new XMLHttpRequest();
-                    xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
+                    xhr.open("POST", "http://" + hostUser + "/QuipaServer/services/profileservice/profile");
                     xhr.setRequestHeader("Accept", "application/json");
                     xhr.setRequestHeader("Content-Type", "application/json");
                     xhr.onload = function () {
