@@ -258,9 +258,9 @@
 <ons-template id="profilecreated.html">
     <ons-page id="profilecreated">
         <ons-toolbar>
-            <div class="center">Profile Created!</div>
+            <div class="center">Profile Created</div>
             <div class="right">
-                <ons-toolbar-button id="logout-button">Done</ons-toolbar-button>
+                <ons-toolbar-button id="profile-created-continue-button">DONE</ons-toolbar-button>
             </div>
         </ons-toolbar>
         <div id="profile-tab-maincard_created">
@@ -290,7 +290,7 @@
     <ons-page id="tabbar-page">
         <ons-tabbar id="appTabbar" style="background-color:#58373C;" position="bottom">
             <ons-tab label="Search" icon="ion-ios-search" page="search.html"></ons-tab>
-            <ons-tab label="Favorites" icon="ion-ios-heart-outline" page="favorites.html"></ons-tab>
+            <ons-tab label="Requests" icon="ion-ios-heart-outline" page="myrequests.html"></ons-tab>
             <ons-tab label="Hired" icon="ion-card" page="hired.html"></ons-tab>
             <ons-tab label="Inbox" icon="ion-email" page="inbox.html"></ons-tab>
             <ons-tab label="Profile" icon="ion-ios-person-outline" page="profile.html"></ons-tab>
@@ -420,121 +420,23 @@
 
 
 <!--- Favorites ------->
-<template id="favorites.html">
+<template id="myrequests.html">
     <ons-page id="forms-page">
         <ons-toolbar>
-            <div class="center">Favorites</div>
+            <div class="center">Requests</div>
         </ons-toolbar>
     </ons-page>
 </template>
 <!--- Favorites ------->
 
-<!--- My Requests ------->
+<!--- Hired ------->
 <template id="hired.html">
     <ons-page id="requestHired">
         <ons-toolbar>
-            <div class="center">My Requests</div>
+            <div class="center">Hired</div>
         </ons-toolbar>
         <div id="myrequest-container">
             <ons-list id="myrequestContent">
-
-
-                <!-- To comment -->
-
-                <!-- <ons-list-item style="background-color:#DFDFDF;">
-                   <div class="center" style="width:70% !important;">
-                   <div style="width:100%;float:left;">
-                            <span style="float:left;margin-bottom: 20px;font-size:18px;font-weight:bold;">No Name</span>
-                            </div>
-                        <div style="width:100%;">
-                            <div style="float:left;">
-                            <img src="img/" style="float:left;" width="50" height="50">
-                                <span style="float:left;margin-left:20px;line-height: 50px;font-size:15px;font-weight:normal;">for hours</span>
-                                </div>
-                                <div style="float:right;">
-                                    <ons-button onclick="chatWithProspect(0, 1, 32);" style="margin:0px;background-color:green !important;margin-right:20px;">CHAT</ons-button>
-                                </div>
-                            </div>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">on </span>
-                            <span style="float:right;padding-right:20px;font-size:15px;line-height: 30px;font-weight:medium;">10-19-2017</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">from</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">24</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">to</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">30</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:40px;">
-                            <span style="float:left;font-size:15px;line-height: 40px;">Total</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 40px;">$30</span>
-                            </div>
-                        </div>
-                    <div class="left" style="width:20% !important;">
-                        <div style="float:left;width:120px;height:100%;text-align:center;">
-                            <br clear="all"/>
-                            <img src="img/image_loader.gif" style="max-width:100%;max-height:100%"  id=""/>
-                        <div style="float:left;width:100%;bottom:0px;margin-bottom:15px;margin-top:10px;">
-                                <ons-button onclick="">Status</ons-button>
-                                </div>
-                            </div>
-                        </div>
-                    </ons-list-item>
-
-                    <ons-list-item>
-
-                    <div class="center">
-                        <div>
-                            <span style="float:left;    margin-bottom: 20px;font-size:18px;font-weight:bold;">No Name</span>
-                            </div>
-                        <div style="width:100%;">
-                            <div style="float:left;">
-                            <img src="img/" style="float:left;" width="50" height="50">
-                                <span style="float:left;margin-left:20px;line-height: 50px;font-size:15px;font-weight:normal;">for hours</span>
-                                </div>
-                                <div style="float:right;">
-                                    <ons-button onclick="chatWithProspect(0, 1, 32);" style="margin:0px;background-color:green !important;margin-right:20px;">CHAT</ons-button>
-                                </div>
-                            </div>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">on </span>
-                            <span style="float:right;padding-right:20px;font-size:15px;line-height: 30px;font-weight:medium;">10-19-2017</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">from</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">24</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:30px;">
-                            <span style="float:left;font-size:15px;line-height: 30px;">to</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 30px;">30</span>
-                            </div><br/><br/>
-                        <div  style="width:100%;height:40px;">
-                            <span style="float:left;font-size:15px;line-height: 40px;">Total</span>
-                            <span style="float:right;font-weight:medium;font-size:15px;padding-right:20px;line-height: 40px;">$30</span>
-                            </div>
-                        </div>
-                    <div class="left">
-
-
-                        <div style="float:left;width:120px;height:100%;text-align:center;">
-
-
-                            <br clear="all"/>
-
-                            <img src="img/image_loader.gif" style="max-width:100%;max-height:100%"  id=""/>
-
-                        <div style="float:left;width:100%;bottom:0px;margin-bottom:15px;margin-top:10px;">
-                                <ons-button onclick="">Status</ons-button>
-                                </div>
-                            </div>
-                        </div>
-                    </ons-list-item> -->
-
-                <!-- To comment -->
-
-
             </ons-list>
         </div>
     </ons-page>
@@ -552,52 +454,6 @@
         </ons-toolbar>
         <div style="height:100%;">
             <div style="height:85%;overflow-y: scroll;" id="chatMainContainer">
-
-                <!-- <ons-card style="min-height: 80px;">
-                    <div style="float:left;width:20%;">
-                    <img id="previewImage" src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=32" width="50" height="50"/>
-                    </div>
-                    <div style="float:right;width:80%;">
-                    Components and utility methods to display many types of dialogs
-                    </div>
-                </ons-card>
-                <ons-card style="min-height: 80px;">
-                    <div style="float:left;width:20%;">
-                    <img id="previewImage" src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=32" width="50" height="50"/>
-                    </div>
-                    <div style="float:right;width:80%;">
-                    Components and utility methods to display many types of dialogs
-                    </div>
-                </ons-card>
-                <ons-card style="background-color:#4080ff;color:white;min-height: 80px;">
-                    <div style="float:left;width:80%;">
-                    <p style="float:right;">Components and utility methods to display many types of dialogs</p>
-                    </div>
-                    <div style="float:right;width:20%;">
-                    <img id="previewImage" src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=1" width="50" height="50" style="float:right;"/>
-                    </div>
-
-                </ons-card>
-                <ons-card style="background-color:#4080ff;color:white;min-height: 80px;">
-                    <div style="float:left;width:80%;">
-                    <p style="float:right;">Components and utility methods to display many types of dialogs</p>
-
-                    </div>
-                    <div style="float:right;width:20%;">
-                    <img id="previewImage" src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=1" width="50" height="50" style="float:right;"/>
-                    </div>
-
-                </ons-card>
-                <ons-card style="background-color:#4080ff;color:white;min-height: 80px;">
-                    <div style="float:left;width:80%;">
-                    <p style="float:right;">Components and utility methods to display many types of dialogs</p>
-                    </div>
-                    <div style="float:right;width:20%;">
-                    <img id="previewImage" src="http://18.220.231.8/QuipaServer/viewProfilePicture.html?profileId=1" width="50" height="50" style="float:right;"/>
-                    </div>
-
-                </ons-card> -->
-
             </div>
 
 
