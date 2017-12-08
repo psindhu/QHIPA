@@ -215,7 +215,8 @@ document.addEventListener('show', function (event) {
                     d.getFullYear()].join('/')+
                     '_' +
                   [ d.getHours().padLeft(),
-                    d.getMinutes().padLeft()].join(':');
+                    d.getMinutes().padLeft(),
+                   d.getSeconds()].join(':');
     	
     	localStorage.setItem('saveLastDateHired', dformat);
     	document.getElementById('hired-tab-notif').removeAttribute("badge");
@@ -1451,7 +1452,8 @@ document.addEventListener('show', function (event) {
 	                    d.getFullYear()].join('/')+
 	                    '_' +
 	                  [ d.getHours().padLeft(),
-	                    d.getMinutes().padLeft()].join(':');
+	                    d.getMinutes().padLeft(),
+                       d.getSeconds()].join(':');
 	  		var profileId = localStorage.getItem('profileId');
 	  			
 	  		if(localStorage.getItem('saveLastDateHired') == null) {
