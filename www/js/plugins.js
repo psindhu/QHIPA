@@ -286,7 +286,7 @@ document.addEventListener('show', function (event) {
 
     function buildMap(lat, long) {
         // set combined position for user
-        console.log("Inside of buildMap");
+        console.log("Inside of buildMap lat = " + lat + ", long = " + long );
         var latlong = new google.maps.LatLng(lat, long);
         // set required options
         var mapOptions = {
@@ -468,12 +468,12 @@ document.addEventListener('show', function (event) {
         var modal = document.querySelector('ons-modal');
 
         // set combined position for user
-        console.log("Inside of buildMapSearch");
+        console.log("Inside of buildMapSearch lat = " + lat + " and long = " + long);
         var latlong = new google.maps.LatLng(lat, long);
         // set required options
         var mapOptions = {
             center: latlong,
-            zoom: 15,
+            zoom: 14,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("search_map"), mapOptions);
@@ -486,7 +486,7 @@ document.addEventListener('show', function (event) {
             fillOpacity: 0.35,
             map: map,
             center: latlong,
-            radius: 400
+            radius: 700
         });
         //circle
 
