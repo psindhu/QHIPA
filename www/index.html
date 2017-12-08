@@ -312,9 +312,10 @@
 <!--- Tab bars ------->
 
 <!--- Search ------->
-<template id="searchdialog.html">
-
-    <ons-dialog id="search-filter-dialog">
+<!--<template id="searchdialog.html">-->
+<template id="search.html">
+    <ons-page id="searchskills">
+    <ons-dialog id="search-filter-dialog" style="display: none">
         <div style="text-align: center; padding: 10px;">
 
             <ons-card>
@@ -386,7 +387,7 @@
             </ons-card>
 
             <div class="center">
-                <ons-button id="refreshMapSearch" onclick="hideDialog('search-filter-dialog')">
+                <ons-button id="refreshMapSearch">
                     <ons-icon icon="ion-search"></ons-icon>
                     Search
                 </ons-button>
@@ -398,10 +399,9 @@
 
         </div>
     </ons-dialog>
-</template>
 
-<template id="search.html">
-    <ons-page id="searchskills">
+
+
         <ons-toolbar>
             <div class="center">Search</div>
             <div class="right" style="margin-right:15px;">

@@ -158,20 +158,33 @@ document.addEventListener('show', function (event) {
     }
 
     if (page.id === 'searchskills') {
-
-
+       /* var dialog = document.getElementById('search-filter-dialog');
+        if (dialog) {
+            dialog.show();
+        }*/
         getSearcherLocation();
-
+        page.querySelector('#refreshMapSearch').onclick = function () {
+            hideDialog('search-filter-dialog');
+            getSearcherLocation();
+        }
         page.querySelector('#search-button').onclick = function () {
             var dialog = document.getElementById('search-filter-dialog');
             if (dialog) {
                 dialog.show();
+            }
+            /*ons.createDialog('search-filter-dialog')
+                .then(function (dialog) {
+                    dialog.show();
+                });*/
+            /*var dialog = document.getElementById('search-filter-dialog');
+            if (dialog) {
+                dialog.show();
             } else {
-                ons.createDialog('searchdialog.html')
+                ons.createDialog('search-filter-dialog')
                     .then(function (dialog) {
                         dialog.show();
                     });
-            }
+            }*/
         };
     }
 
@@ -295,7 +308,7 @@ document.addEventListener('show', function (event) {
                     if (data === '') {
                         showDialogWithMessage('dialog-invalid-message', 'Invalid Phone number or Password!');
                     } else {
-
+                        sessionStorage.setItem('selectedSearchSkill', '1');
                         sessionStorage.setItem('tabLoaderId', 0);
                         localStorage.setItem('profileId', data['profileId']);
                         document.querySelector('#Navigator').pushPage('tabbar.html', {
