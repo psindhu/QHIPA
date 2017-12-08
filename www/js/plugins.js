@@ -291,7 +291,7 @@ document.addEventListener('show', function (event) {
         // set required options
         var mapOptions = {
             center: latlong,
-            zoom: 12,
+            zoom: 19,
             zoomControl: false,
             gestureHandling: 'none',
             mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -352,13 +352,17 @@ document.addEventListener('show', function (event) {
     }
 
     function createProfile() {
-        saveProfileIntoIndexDB();
+        if (navigator.connection.type === Connection.WIFI) {
+            saveProfileRemote()
+        }else{
+            saveProfileIntoIndexDB();
+        }
     }
 
     function saveProfileRemote() {
         var modal = document.querySelector('ons-modal');
         modal.show();
-        var profile = createProfile();
+        var profile = loadProfile();
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://18.220.231.8/QuipaServer/services/profileservice/profile");
         xhr.setRequestHeader("Accept", "application/json");
@@ -373,9 +377,9 @@ document.addEventListener('show', function (event) {
 
                     localStorage.setItem('profileId', data['profileId']);
 
-                    document.querySelector('#Navigator').pushPage('tabbar.html', {
+                    document.querySelector('#Navigator').pushPage('profilecreated.html', {
                         data: {
-                            title: 'Search'
+                            title: 'Profile Created!'
                         }
                     });
                     // document.getElementById('profilePictureCreated').value=data['profilePicture'];
