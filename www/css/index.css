@@ -179,6 +179,7 @@ height:100%;
 
 #userImageView {
     align-content: center;
+    max-width: 80%;
 }
 .photo {
     text-align:center;
